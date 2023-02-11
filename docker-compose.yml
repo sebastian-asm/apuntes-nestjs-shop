@@ -1,0 +1,13 @@
+services:
+  db:
+    # siempre se recomienda trabajar con versiones especificas
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    container_name: nest-shop-db
+    volumes:
+      - ./postgres:/var/lib/posgresql/data
