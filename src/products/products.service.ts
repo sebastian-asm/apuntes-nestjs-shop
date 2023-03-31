@@ -5,7 +5,7 @@ import { Repository } from 'typeorm'
 import { validate as isUUID } from 'uuid'
 
 import { CreateProductDto } from './dto/create-product.dto'
-// import { UpdateProductDto } from './dto/update-product.dto'
+import { UpdateProductDto } from './dto/update-product.dto'
 import { Product } from './entities/product.entity'
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
 
@@ -65,9 +65,17 @@ export class ProductsService {
     }
   }
 
-  // update (id: number, updateProductDto: UpdateProductDto) {
-  //   return `This action updates a #${id} product`
-  // }
+  async update (id: string, updateProductDto: UpdateProductDto) {
+    try {
+      // preparando para la actualización
+      const product = await this.productRepository.preload({ id, ...updateProductDto })
+      if (!product) throw new NotFoundException('Product not found')
+      await this.productRepository.save(product)
+      return product
+    } catch (error) {
+      this.handleDBExceptions(error)
+    }
+  }
 
   async remove (id: string) {
     try {
