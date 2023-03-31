@@ -2,6 +2,8 @@ import { ConfigModule } from '@nestjs/config'
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
+import { ProductsModule } from './products/products.module'
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -15,10 +17,11 @@ import { TypeOrmModule } from '@nestjs/typeorm'
       // cargar automaticamente las entidades a medida que se crean
       autoLoadEntities: true,
       // se recomienda solo en modo dev para sicronizar las entidades de la db
-      synchronize: true,
+      synchronize: true
     }),
+    ProductsModule
   ],
   controllers: [],
-  providers: [],
+  providers: []
 })
 export class AppModule {}
