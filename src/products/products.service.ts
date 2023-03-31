@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, Logger, 
 import { InjectRepository } from '@nestjs/typeorm'
 
 import { Repository } from 'typeorm'
+import { validate as isUUID } from 'uuid'
 
 import { CreateProductDto } from './dto/create-product.dto'
 // import { UpdateProductDto } from './dto/update-product.dto'
@@ -43,9 +44,20 @@ export class ProductsService {
     }
   }
 
-  async findOne (id: string) {
+  async findOne (query: string) {
+    let product: Product
     try {
-      const product = await this.productRepository.findOneBy({ id })
+      if (isUUID(query)) {
+        product = await this.productRepository.findOneBy({ id: query })
+      } else {
+        const queryBuilder = this.productRepository.createQueryBuilder()
+        // construccion de query más avanzada (evitar inyeccion de dependencia)
+        product = await queryBuilder.where('UPPER(title)=:title or slug=:slug', {
+          title: query.toUpperCase(),
+          slug: query.toLowerCase()
+        }).getOne()
+      }
+
       if (!product) throw new NotFoundException('Product not found')
       return product
     } catch (error) {
