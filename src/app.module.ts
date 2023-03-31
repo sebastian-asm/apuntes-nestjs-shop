@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { ProductsModule } from './products/products.module'
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { ProductsModule } from './products/products.module'
       // se recomienda solo en modo dev para sicronizar las entidades de la db
       synchronize: true
     }),
-    ProductsModule
+    ProductsModule,
+    CommonModule
   ],
   controllers: [],
   providers: []
