@@ -4,28 +4,33 @@ export class CreateProductDto {
   @IsString()
     title: string
 
-    @IsNumber()
-    @IsPositive()
-    @IsOptional()
-      price?: number
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+    price?: number
 
-    @IsString()
-    @IsOptional()
-      description?: string
+  @IsString()
+  @IsOptional()
+    description?: string
 
-    @IsString()
-    @IsOptional()
-      slug?: string
+  @IsString()
+  @IsOptional()
+    slug?: string
 
-    @IsInt()
-    @IsPositive()
-    @IsOptional()
-      stock?: number
+  @IsInt()
+  @IsPositive()
+  @IsOptional()
+    stock?: number
 
-    @IsString({ each: true })
-    @IsArray()
-      sizes: string[]
+  @IsString({ each: true })
+  @IsArray()
+    sizes: string[]
 
-    @IsIn(['men', 'women', 'kid'])
-      gender: string
+  @IsIn(['men', 'women', 'kid'])
+    gender: string
+
+  @IsString({ each: true })
+  @IsArray()
+  @IsOptional()
+    tags: string[]
 }
