@@ -9,7 +9,8 @@ import {
 
 import { ProductImage } from './product-image.entity'
 
-@Entity()
+// asignando nombre a la tabla en la db
+@Entity({ name: 'products' })
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string
