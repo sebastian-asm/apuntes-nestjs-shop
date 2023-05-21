@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 
-import { Repository } from 'typeorm'
+import { DataSource, Repository } from 'typeorm'
 import { validate as isUUID } from 'uuid'
 
 import { CreateProductDto } from './dto/create-product.dto'
@@ -23,8 +23,12 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+
     @InjectRepository(ProductImage)
-    private readonly productImageRepository: Repository<ProductImage>
+    private readonly productImageRepository: Repository<ProductImage>,
+
+    // referencia a la cadena de conexión
+    private readonly dataSource: DataSource
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -100,18 +104,37 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
+    const { images, ...toUpdate } = updateProductDto
+
+    // query runner: permite ejecutar multiples queries y en caso de error hacer rollback
+    const queryRunner = this.dataSource.createQueryRunner()
+    await queryRunner.connect()
+    await queryRunner.startTransaction()
+
     try {
       // preparando para la actualización
-      const product = await this.productRepository.preload({
-        id,
-        ...updateProductDto,
-        images: []
-      })
-
+      const product = await this.productRepository.preload({ id, ...toUpdate })
       if (!product) throw new NotFoundException('Product not found')
-      await this.productRepository.save(product)
-      return product
+
+      // en caso de existir imagenes, eliminar solo las anteriores que corresponde al id del product
+      if (images) {
+        await queryRunner.manager.delete(ProductImage, { product: id })
+        product.images = images.map((image) =>
+          this.productImageRepository.create({ url: image })
+        )
+      }
+
+      // guardando en memoria la actualuzación (no impacta la db)
+      await queryRunner.manager.save(product)
+      // el commit realmente guarda en la db
+      await queryRunner.commitTransaction()
+      await queryRunner.release()
+
+      return this.findOnePlain(id)
     } catch (error) {
+      // en caso de cualquier error con el delete o save se hace el rollback
+      await queryRunner.rollbackTransaction()
+      await queryRunner.release()
       this.handleDBExceptions(error)
     }
   }
