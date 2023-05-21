@@ -10,6 +10,9 @@ export class ProductImage {
   @Column('text')
   url: string
 
-  @ManyToOne(() => Product, (product) => product.images)
+  @ManyToOne(() => Product, (product) => product.images, {
+    // en caso de eliminar el product, toda la relacion con sus images es eliminada en cascada
+    onDelete: 'CASCADE'
+  })
   product: Product
 }

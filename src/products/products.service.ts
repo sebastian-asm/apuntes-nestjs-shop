@@ -142,7 +142,7 @@ export class ProductsService {
   async remove(id: string) {
     try {
       const product = await this.findOne(id)
-      return await this.productRepository.remove(product)
+      await this.productRepository.remove(product)
     } catch (error) {
       this.handleDBExceptions(error)
     }
