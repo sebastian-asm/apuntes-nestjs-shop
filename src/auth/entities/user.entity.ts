@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn
+} from 'typeorm'
 
 @Entity('users')
 export class User {
@@ -22,4 +28,15 @@ export class User {
     default: ['user']
   })
   roles: string[]
+
+  // pasado a minusculas el email al crear nuevo registro o actualizar
+  @BeforeInsert()
+  emailLowerCase() {
+    this.email = this.email.trim().toLowerCase()
+  }
+
+  @BeforeUpdate()
+  updatEmailLowerCase() {
+    this.emailLowerCase()
+  }
 }
