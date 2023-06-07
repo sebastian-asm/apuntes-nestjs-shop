@@ -1,10 +1,20 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards
+  // SetMetadata
+} from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 
 import { AuthService } from './auth.service'
 import { CreateUserDto, LoginUserDto } from './dto'
-import { GetUser } from './decorators/get-user'
+import { GetUser, RawHeaders, Auth } from './decorators'
+import { RoleProtected } from './decorators/role-protected/role-protected.decorator'
 import { User } from './entities/user.entity'
+import { UseRoleGuard } from './guards/use-role/use-role.guard'
+import { ValidRoles } from 'src/interfaces'
 
 @Controller('auth')
 export class AuthController {
@@ -25,8 +35,34 @@ export class AuthController {
   @UseGuards(AuthGuard())
   testingPrivateRoute(
     // decorador personalizado
-    @GetUser() user: User
+    @GetUser() user: User,
+    @GetUser('email') email: User,
+    @RawHeaders() rawHeaders: string[]
+    // @Headers() headers: IncomingHttpHeaders
   ) {
-    return user
+    return {
+      user,
+      email,
+      rawHeaders
+    }
+  }
+
+  @Get('private2')
+  @RoleProtected(ValidRoles.SUPER_USER, ValidRoles.ADMIN)
+  // @SetMetadata('roles', ['admin', 'super-user'])
+  // guard personalizado no son necesario ejecutarlo como funcion(), solo se pasa la referencia
+  @UseGuards(AuthGuard(), UseRoleGuard)
+  privateRoute2(@GetUser() user: User) {
+    return {
+      user
+    }
+  }
+
+  @Get('private3')
+  @Auth(ValidRoles.ADMIN)
+  privateRoute3(@GetUser() user: User) {
+    return {
+      user
+    }
   }
 }
