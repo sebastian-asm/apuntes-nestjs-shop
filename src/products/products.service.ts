@@ -11,9 +11,10 @@ import { DataSource, Repository } from 'typeorm'
 import { validate as isUUID } from 'uuid'
 
 import { CreateProductDto } from './dto/create-product.dto'
-import { UpdateProductDto } from './dto/update-product.dto'
-import { Product, ProductImage } from './entities'
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
+import { Product, ProductImage } from './entities'
+import { UpdateProductDto } from './dto/update-product.dto'
+import { User } from 'src/auth/entities/user.entity'
 
 @Injectable()
 export class ProductsService {
@@ -31,12 +32,13 @@ export class ProductsService {
     private readonly dataSource: DataSource
   ) {}
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, user: User) {
     try {
       // se crear el registro en memoria
       const { images = [], ...productDetails } = createProductDto
       const product = this.productRepository.create({
         ...productDetails,
+        user,
         images: images.map((image) =>
           this.productImageRepository.create({ url: image })
         )
@@ -103,7 +105,7 @@ export class ProductsService {
     }
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, user: User) {
     const { images, ...toUpdate } = updateProductDto
 
     // query runner: permite ejecutar multiples queries y en caso de error hacer rollback
@@ -124,6 +126,7 @@ export class ProductsService {
         )
       }
 
+      product.user = user
       // guardando en memoria la actualuzación (no impacta la db)
       await queryRunner.manager.save(product)
       // el commit realmente guarda en la db

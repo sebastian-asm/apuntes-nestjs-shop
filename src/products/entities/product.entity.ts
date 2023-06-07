@@ -3,11 +3,13 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
 } from 'typeorm'
 
 import { ProductImage } from './product-image.entity'
+import { User } from 'src/auth/entities/user.entity'
 
 // asignando nombre a la tabla en la db
 @Entity({ name: 'products' })
@@ -54,6 +56,17 @@ export class Product {
     default: []
   })
   tags: string[]
+
+  // multiples productos tienen un unico usuario que los crea
+  @ManyToOne(
+    // entidad con la que se relaciona
+    () => User,
+    // como el usuario se relacion con esta tabla
+    (user) => user.product,
+    // cargar automaticamente la relacion para enviarla como respuesta
+    { eager: true }
+  )
+  user: User
 
   // un producto puede tener multiples imagenes
   @OneToMany(() => ProductImage, (productImage) => productImage.product, {

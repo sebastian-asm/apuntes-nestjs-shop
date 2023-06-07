@@ -9,7 +9,7 @@ import { Reflector } from '@nestjs/core'
 
 import { Observable } from 'rxjs'
 
-import { META_ROLES } from 'src/auth/decorators/role-protected/role-protected.decorator'
+import { META_ROLES } from 'src/auth/decorators/role-protected.decorator'
 import { User } from 'src/auth/entities/user.entity'
 
 @Injectable()
@@ -25,6 +25,9 @@ export class UseRoleGuard implements CanActivate {
       META_ROLES,
       context.getHandler()
     )
+
+    if (!validRoles || validRoles.length === 0) return true
+
     // obteniendo el usuario de la request
     const req = context.switchToHttp().getRequest()
     const user = req.user as User
