@@ -7,6 +7,7 @@ import {
   // SetMetadata
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
+import { ApiTags } from '@nestjs/swagger'
 
 import { AuthService } from './auth.service'
 import { CreateUserDto, LoginUserDto } from './dto'
@@ -16,6 +17,7 @@ import { User } from './entities/user.entity'
 import { UseRoleGuard } from './guards/use-role/use-role.guard'
 import { ValidRoles } from 'src/interfaces'
 
+@ApiTags('Autenticación')
 @Controller('auth')
 export class AuthController {
   // eslint-disable-next-line no-useless-constructor

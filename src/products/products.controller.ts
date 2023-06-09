@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Query
 } from '@nestjs/common'
+import { ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { Auth, GetUser } from 'src/auth/decorators'
 import { CreateProductDto } from './dto/create-product.dto'
@@ -17,7 +18,9 @@ import { ProductsService } from './products.service'
 import { UpdateProductDto } from './dto/update-product.dto'
 import { User } from 'src/auth/entities/user.entity'
 import { ValidRoles } from 'src/interfaces'
+import { Product } from './entities'
 
+@ApiTags('Productos')
 @Controller('products')
 export class ProductsController {
   // eslint-disable-next-line no-useless-constructor
@@ -25,6 +28,8 @@ export class ProductsController {
 
   @Post()
   @Auth(ValidRoles.ADMIN)
+  @ApiResponse({ status: 201, description: 'Producto creado', type: Product })
+  @ApiResponse({ status: 403, description: 'Problema con token' })
   create(@Body() createProductDto: CreateProductDto, @GetUser() user: User) {
     return this.productsService.create(createProductDto, user)
   }

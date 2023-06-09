@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { ApiTags } from '@nestjs/swagger'
 
 import { Express, Response } from 'express'
 import { diskStorage } from 'multer'
@@ -17,6 +18,7 @@ import { diskStorage } from 'multer'
 import { fileFilter, fileName } from './helpers'
 import { FilesService } from './files.service'
 
+@ApiTags('Archivos')
 @Controller('files')
 export class FilesController {
   // eslint-disable-next-line no-useless-constructor
