@@ -9,6 +9,7 @@ import { CommonModule } from './common/common.module'
 import { SeedModule } from './seed/seed.module'
 import { FilesModule } from './files/files.module'
 import { AuthModule } from './auth/auth.module';
+import { MessagesWsModule } from './messages-ws/messages-ws.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { AuthModule } from './auth/auth.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public')
     }),
-    AuthModule
+    AuthModule,
+    MessagesWsModule
   ],
   controllers: [],
   providers: []
